@@ -440,6 +440,8 @@ Removed Options
 * The long defunct and undocumented ``single-cluster-route`` flag has been removed.
 
 * Deprecated options ``enable-k8s-event-handover`` and ``cnp-status-update-interval`` has been removed.
+* Deprecated values ``strict``, ``partial``, ``probe`` and ``disabled`` for ``kube-proxy-replacement`` flag have been
+  removed. Please use ``true`` and ``false`` instead.
 
 Helm Options
 ~~~~~~~~~~~~
@@ -463,6 +465,9 @@ Helm Options
   ``tunnelProtocol``, and has been removed.
 
 * Values  ``enableK8sEventHandover`` and ``enableCnpStatusUpdates`` have been removed.
+
+* Deprecated values ``strict``, ``partial``, ``probe`` and ``disabled`` for ``kubeProxyReplacement`` option have been
+  removed. Please use ``true`` and ``false`` instead.
 
 Added Metrics
 ~~~~~~~~~~~~~
