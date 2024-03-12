@@ -162,7 +162,7 @@ func (o *OpLabels) ModifyIdentityLabels(addLabels, delLabels Labels) (changed bo
 		if _, found := o.Custom[k]; !found {
 			if _, found := o.OrchestrationIdentity[k]; !found {
 				if _, found := o.Disabled[k]; !found {
-					return false, fmt.Errorf("label %s not found", k)
+					return false, fmt.Errorf("label %s not found in labels derived from orchestration system", k)
 				}
 			}
 		}
