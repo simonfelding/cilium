@@ -32,6 +32,8 @@ concurrency:
 env:
   # renovate: datasource=golang-version depName=go
   go_version: 1.22.0
+  # renovate: datasource=git-refs depName=https://github.com/kubernetes/perf-tests
+  cl2_version: 18e93f693c2f787e2415e48f8d464579fbe22537
   # Adding k8s.local to the end makes kops happy-
   # has stricter DNS naming requirements.
   test_name: node-throughput
@@ -115,7 +117,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: kubernetes/perf-tests
-          ref: 82036a7e9bdb803b5b133c2d83cfec710819f9ab # master
+          ref: ${{ env.cl2_version }}
           persist-credentials: false
           sparse-checkout: clusterloader2
           path: perf-tests
