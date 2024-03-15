@@ -67,7 +67,7 @@ jobs:
         id: vars
         run: |
           SHA="${{ github.sha }}"
-          SHA="e1afa06774191d65714576d55f2eadcbe29fc2e6"
+          SHA="ce25c55e4baffd05337a27d07b7a729035e35595"
 
           # Setup Cilium install options
           CILIUM_INSTALL_DEFAULTS="${{ steps.default_vars.outputs.cilium_install_defaults }} \

@@ -27,7 +27,7 @@ runs:
           SHA="${{ github.sha }}"
         fi
 
-        SHA="e1afa06774191d65714576d55f2eadcbe29fc2e6"
+        SHA="ce25c55e4baffd05337a27d07b7a729035e35595"
 
         CILIUM_INSTALL_DEFAULTS="--chart-directory=${{ inputs.chart-dir }} \
           --helm-set=debug.enabled=true \
