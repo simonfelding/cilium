@@ -345,6 +345,7 @@ func (rc *remoteCluster) makeExtraOpts(clusterLock *clusterLock) kvstore.ExtraOp
 		ClusterName:                  rc.name,
 		ClusterSizeDependantInterval: rc.clusterSizeDependantInterval,
 		DialOption:                   dialOpts,
+		DisableStatusChecks:          true,
 	}
 }
 
