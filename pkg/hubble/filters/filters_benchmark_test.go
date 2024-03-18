@@ -7,6 +7,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -20,7 +21,7 @@ var (
 )
 
 func runFilterBenchmark(b *testing.B, ff *flowpb.FlowFilter, events []*v1.Event) {
-	filterFuncs, err := BuildFilter(context.Background(), ff, DefaultFilters)
+	filterFuncs, err := BuildFilter(context.Background(), ff, DefaultFilters(logrus.New()))
 	require.NoError(b, err)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -95,9 +96,10 @@ func BenchmarkCELL4ProtocolPortFlowFilterNonMatching100(b *testing.B) {
 }
 
 func TestBenchmarkFiltersAreEquivalent(t *testing.T) {
-	basicFuncs, err := BuildFilter(context.Background(), basicL4Filter, DefaultFilters)
+	log := logrus.New()
+	basicFuncs, err := BuildFilter(context.Background(), basicL4Filter, DefaultFilters(log))
 	require.NoError(t, err)
-	celFuncs, err := BuildFilter(context.Background(), celL4Filter, DefaultFilters)
+	celFuncs, err := BuildFilter(context.Background(), celL4Filter, DefaultFilters(log))
 	require.NoError(t, err)
 
 	gotBasic := basicFuncs.MatchOne(matchingEvent)

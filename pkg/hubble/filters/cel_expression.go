@@ -10,14 +10,12 @@ import (
 
 	flowpb "github.com/cilium/cilium/api/v1/flow"
 	v1 "github.com/cilium/cilium/pkg/hubble/api/v1"
-	"github.com/cilium/cilium/pkg/logging"
-	"github.com/cilium/cilium/pkg/logging/logfields"
+	"github.com/sirupsen/logrus"
 
 	"github.com/google/cel-go/cel"
 )
 
 var (
-	celFilterLogger = logging.DefaultLogger.WithField(logfields.LogSubsys, "cel-filter")
 	// unfortunately, "flow" conflicts with the protobuf package name "flow", so
 	// we have to use something else.
 	// TODO: what should this be?
@@ -38,7 +36,7 @@ func init() {
 		cel.Variable(flowVariableName, cel.ObjectType("flow.Flow")),
 	)
 	if err != nil {
-		celFilterLogger.Fatalf("error creating CEL env %s", err)
+		panic(fmt.Sprintf("error creating CEL env %s", err))
 	}
 
 }
@@ -68,7 +66,7 @@ func compile(env *cel.Env, expr string, celType *cel.Type) (*cel.Ast, error) {
 	return ast, nil
 }
 
-func filterByCELExpression(ctx context.Context, exprs []string) (FilterFunc, error) {
+func filterByCELExpression(ctx context.Context, log logrus.FieldLogger, exprs []string) (FilterFunc, error) {
 	var programs []cel.Program
 	for _, expr := range exprs {
 		// we want filters to be boolean expressions, so check the type of the
@@ -91,13 +89,13 @@ func filterByCELExpression(ctx context.Context, exprs []string) (FilterFunc, err
 				flowVariableName: ev.GetFlow(),
 			})
 			if err != nil {
-				celFilterLogger.Errorf("error running CEL program %s", err)
+				log.Errorf("error running CEL program %s", err)
 				return false
 			}
 
 			v, err := out.ConvertToNative(goBoolType)
 			if err != nil {
-				celFilterLogger.Errorf("invalid conversion in CEL program: %s", err)
+				log.Errorf("invalid conversion in CEL program: %s", err)
 				return false
 			}
 			b, ok := v.(bool)
@@ -111,12 +109,14 @@ func filterByCELExpression(ctx context.Context, exprs []string) (FilterFunc, err
 
 // CELExpressionFilter implements filtering based on CEL (common expression
 // language) expressions
-type CELExpressionFilter struct{}
+type CELExpressionFilter struct {
+	log logrus.FieldLogger
+}
 
 // OnBuildFilter builds a CEL expression filter.
 func (t *CELExpressionFilter) OnBuildFilter(ctx context.Context, ff *flowpb.FlowFilter) ([]FilterFunc, error) {
 	if exprs := ff.GetExperimental().GetCelExpression(); exprs != nil {
-		filter, err := filterByCELExpression(ctx, exprs)
+		filter, err := filterByCELExpression(ctx, t.log, exprs)
 		if err != nil {
 			return nil, err
 		}
