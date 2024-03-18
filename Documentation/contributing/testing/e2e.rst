@@ -68,6 +68,7 @@ You can install Cilium with the following command:
 
 .. code-block:: shell-session
 
+    $ kubectl label node kind-worker3 cilium.io/no-schedule=true
     $ cilium install --wait \
         --chart-directory=$GOPATH/src/github.com/cilium/cilium/install/kubernetes/cilium \
         --set image.override=localhost:5000/cilium/cilium-dev:local \
@@ -76,7 +77,7 @@ You can install Cilium with the following command:
         --set operator.image.pullPolicy=Never \
         --set routingMode=tunnel \
         --set tunnelProtocol=vxlan \
-        --nodes-without-cilium=kind-worker3
+        --nodes-without-cilium
     ...
     ⌛ Waiting for Cilium to be installed and ready...
     ✅ Cilium was successfully installed! Run 'cilium status' to view installation health
@@ -154,12 +155,13 @@ Finally, you can SSH into the VM to start a K8s cluster, install Cilium, and fin
     # git config --global --add safe.directory /host/cilium
     # ./contrib/scripts/kind.sh "" 3 "" "" "none" "dual"
     # cd /host/cilium-cli
+    # kubectl label node kind-worker3 cilium.io/no-schedule=true
     # ./cilium install --wait \
         --chart-directory=../cilium/install/kubernetes/cilium \
         --version=v1.13.2 \
         --set routingMode=tunnel \
         --set tunnelProtocol=vxlan \
-        --nodes-without-cilium=kind-worker3
+        --nodes-without-cilium
     # ./cilium connectivity test
     ...
     ✅ All 32 tests (263 actions) successful, 2 tests skipped, 1 scenarios skipped.
